@@ -1,0 +1,122 @@
+Order_ID,Order_Date,Branch,Product,Category,Quantity,Unit_Price,Discount,Payment_Method
+ORD0001,2026-02-05,Dankuni,Brownie,Dessert,1.0,129,0,UPI
+ORD0002,2026-01-12,Salt Lake,Burger,Main Course,1.0,149,50,UPI
+ORD0003,2026-01-30,Kolkata,Pizza,Main Course,1.0,299,0,Card
+ORD0004,2026-01-29,Salt Lake,Burger,Main Course,5.0,149,20,Card
+ORD0005,2026-03-31,Salt Lake,Pasta,Main Course,1.0,229,0,Cash
+ORD0006,2026-02-13,Kolkata,Pasta,Main Course,,229,0,UPI
+ORD0007,2026-02-14,Howrah,Garlic Bread,Sides,1.0,119,0,UPI
+ORD0008,2026-01-16,Salt Lake,Brownie,Dessert,4.0,129,50,UPI
+ORD0009,2026-02-16,Dankuni,Cold Coffee,Beverages,3.0,99,50,Card
+ORD0010,2026-02-07,Kolkata,Pizza,Main Course,1.0,299,0,UPI
+ORD0011,2026-02-28,Howrah,Pizza,Main Course,4.0,299,0,UPI
+ORD0012,2026-03-27,Howrah,Pasta,Main Course,3.0,229,0,Card
+ORD0013,2026-03-23,Dankuni,Brownie,Dessert,1.0,129,50,Card
+ORD0014,2026-03-01,Salt Lake,Brownie,Dessert,2.0,129,0,Cash
+ORD0015,2026-03-29,Howrah,Brownie,Dessert,5.0,129,0,UPI
+ORD0016,2026-02-21,Howrah,Burger,Main Course,1.0,149,0,UPI
+ORD0017,2026-01-28,Salt Lake,Burger,Main Course,5.0,149,0,Cash
+ORD0018,2026-02-03,Dankuni,Brownie,Dessert,4.0,129,0,UPI
+ORD0019,2026-02-03,Salt Lake,Brownie,Dessert,5.0,129,50,Card
+ORD0020,2026-01-18,Salt Lake,Garlic Bread,Sides,3.0,119,0,UPI
+ORD0021,2026-03-22,Dankuni,Pizza,Main Course,1.0,299,0,Card
+ORD0022,2026-02-19,Salt Lake,Garlic Bread,Sides,5.0,119,0,Card
+ORD0023,2026-03-12,Kolkata,Garlic Bread,Sides,5.0,119,0,Card
+ORD0024,2026-02-04,Howrah,Brownie,Dessert,1.0,129,50,UPI
+ORD0025,2026-02-28,Kolkata,Pasta,Main Course,4.0,229,0,Card
+ORD0026,2026-01-23,Kolkata,Brownie,Dessert,3.0,129,50,Card
+ORD0027,2026-01-26,Dankuni,Pasta,Main Course,5.0,229,50,Cash
+ORD0028,2026-01-01,Howrah,Burger,Main Course,5.0,149,50,Cash
+ORD0029,2026-02-09,Dankuni,Pizza,Main Course,1.0,299,0,UPI
+ORD0030,2026-01-11,Salt Lake,Burger,Main Course,5.0,149,0,UPI
+ORD0031,2026-03-26,Salt Lake,Cold Coffee,Beverages,2.0,99,0,Card
+ORD0032,2026-03-19,Salt Lake,Burger,Main Course,3.0,149,50,UPI
+ORD0033,2026-02-21,Howrah,Cold Coffee,Beverages,2.0,99,0,Cash
+ORD0034,2026-02-01,Dankuni,Cold Coffee,Beverages,4.0,99,0,UPI
+ORD0035,2026-03-12,Dankuni,Pasta,Main Course,1.0,229,50,Card
+ORD0036,2026-03-22,Kolkata,Burger,Main Course,1.0,149,0,UPI
+ORD0037,2026-01-10,Dankuni,Pizza,Main Course,1.0,299,0,Cash
+ORD0038,2026-03-11,Dankuni,Brownie,Dessert,4.0,129,0,Card
+ORD0039,2026-02-01,Salt Lake,Cold Coffee,Beverages,5.0,99,20,Cash
+ORD0040,2026-03-26,Salt Lake,Burger,Main Course,1.0,149,0,Cash
+ORD0041,2026-01-07,Kolkata,Garlic Bread,Sides,4.0,119,20,UPI
+ORD0042,2026-02-01,Dankuni,Garlic Bread,Sides,3.0,119,0,UPI
+ORD0043,2026-02-24,Dankuni,Cold Coffee,Beverages,4.0,99,0,Cash
+ORD0044,2026-02-26,Kolkata,Garlic Bread,Sides,2.0,119,0,UPI
+ORD0045,2026-01-12,Dankuni,Brownie,Dessert,5.0,129,0,UPI
+ORD0046,2026-01-28,Salt Lake,Garlic Bread,Sides,4.0,119,20,UPI
+ORD0047,2026-02-19,Howrah,Burger,Main Course,4.0,149,0,Cash
+ORD0048,2026-03-26,Salt Lake,Pasta,Main Course,4.0,229,50,UPI
+ORD0049,2026-01-08,Kolkata,Burger,Main Course,3.0,149,0,Card
+ORD0050,2026-03-16,Salt Lake,Pasta,Main Course,1.0,229,0,Card
+ORD0051,2026-03-07,Kolkata,Cold Coffee,Beverages,2.0,99,0,UPI
+ORD0052,2026-03-28,Dankuni,Pizza,Main Course,5.0,299,0,Cash
+ORD0053,2026-03-16,Kolkata,Pizza,Main Course,5.0,299,0,Card
+ORD0054,2026-03-14,Howrah,Pizza,Main Course,4.0,299,50,Cash
+ORD0055,2026-02-03,Salt Lake,Burger,Main Course,3.0,149,0,UPI
+ORD0056,2026-02-10,Kolkata,Brownie,Dessert,3.0,129,20,UPI
+ORD0057,2026-01-13,Kolkata,Garlic Bread,Sides,5.0,119,50,Card
+ORD0058,2026-01-17,Howrah,Burger,Main Course,5.0,149,0,UPI
+ORD0059,2026-01-21,Salt Lake,Burger,Main Course,3.0,149,0,Card
+ORD0060,2026-03-25,Kolkata,Brownie,Dessert,3.0,129,50,Card
+ORD0061,2026-01-18,Howrah,Cold Coffee,Beverages,3.0,99,0,UPI
+ORD0062,2026-02-04,Howrah,Pizza,Main Course,5.0,299,0,Card
+ORD0063,2026-03-29,Howrah,Burger,Main Course,3.0,149,0,Card
+ORD0064,2026-01-12,Salt Lake,Garlic Bread,Sides,3.0,119,0,Cash
+ORD0065,2026-01-17,Howrah,Pizza,Main Course,1.0,299,0,UPI
+ORD0066,2026-02-24,Kolkata,Brownie,Dessert,4.0,129,50,UPI
+ORD0067,2026-01-05,Howrah,Pizza,Main Course,2.0,299,50,Card
+ORD0068,2026-01-17,Kolkata,Cold Coffee,Beverages,2.0,99,20,Cash
+ORD0069,2026-01-27,Dankuni,Pasta,Main Course,1.0,229,0,Card
+ORD0070,2026-02-22,Dankuni,Pizza,Main Course,3.0,299,50,UPI
+ORD0071,2026-01-04,Dankuni,Burger,Main Course,2.0,149,20,Card
+ORD0072,2026-02-04,Dankuni,Pasta,Main Course,4.0,229,0,Card
+ORD0073,2026-03-02,Dankuni,Pizza,Main Course,4.0,299,0,UPI
+ORD0074,2026-01-30,Dankuni,Garlic Bread,Sides,3.0,119,0,UPI
+ORD0075,2026-02-12,Howrah,Brownie,Dessert,2.0,129,20,UPI
+ORD0076,2026-02-21,Howrah,Pasta,Main Course,3.0,229,50,UPI
+ORD0077,2026-03-16,Howrah,Pizza,Main Course,3.0,299,0,UPI
+ORD0078,2026-02-14,Howrah,Pizza,Main Course,5.0,299,20,Cash
+ORD0079,2026-02-19,Dankuni,Cold Coffee,Beverages,5.0,99,0,Cash
+ORD0080,2026-03-08,Dankuni,Pizza,Main Course,4.0,299,0,Cash
+ORD0081,2026-03-21,Howrah,Garlic Bread,Sides,1.0,119,0,Card
+ORD0082,2026-02-09,Salt Lake,Pizza,Main Course,3.0,299,50,Cash
+ORD0083,2026-01-17,Dankuni,Garlic Bread,Sides,3.0,119,50,Cash
+ORD0084,2026-03-20,Howrah,Brownie,Dessert,4.0,129,0,Cash
+ORD0085,2026-02-06,Dankuni,Cold Coffee,Beverages,1.0,99,0,Cash
+ORD0086,2026-03-01,Salt Lake,Cold Coffee,Beverages,5.0,99,0,Cash
+ORD0087,2026-03-02,Dankuni,Brownie,Dessert,2.0,129,50,Card
+ORD0088,2026-03-26,Howrah,Pizza,Main Course,3.0,299,50,UPI
+ORD0089,2026-01-26,Dankuni,Burger,Main Course,3.0,149,0,UPI
+ORD0090,2026-03-20,Kolkata,Pizza,Main Course,2.0,299,20,Cash
+ORD0091,2026-03-31,Salt Lake,Garlic Bread,Sides,5.0,119,0,Cash
+ORD0092,2026-03-25,Kolkata,Garlic Bread,Sides,2.0,119,0,UPI
+ORD0093,2026-03-31,Salt Lake,Garlic Bread,Sides,2.0,119,0,UPI
+ORD0094,2026-02-28,Dankuni,Cold Coffee,Beverages,2.0,99,0,Cash
+ORD0095,2026-03-18,Howrah,Brownie,Dessert,5.0,129,50,Cash
+ORD0096,2026-03-12,Salt Lake,Cold Coffee,Beverages,5.0,99,20,UPI
+ORD0097,2026-02-03,Dankuni,Brownie,Dessert,4.0,129,20,Card
+ORD0098,2026-03-22,Dankuni,Pasta,Main Course,5.0,229,20,Cash
+ORD0099,2026-01-31,Howrah,Garlic Bread,Sides,1.0,119,0,Cash
+ORD0100,2026-01-18,Dankuni,Pasta,Main Course,5.0,229,0,UPI
+ORD0101,2026-01-09,Salt Lake,Garlic Bread,Sides,2.0,119,0,Cash
+ORD0102,2026-02-23,Kolkata,Pasta,Main Course,5.0,229,20,UPI
+ORD0103,2026-03-31,Kolkata,Garlic Bread,Sides,4.0,119,50,Card
+ORD0104,2026-02-15,Howrah,Garlic Bread,Sides,4.0,119,0,Cash
+ORD0105,2026-03-19,Dankuni,Garlic Bread,Sides,5.0,119,50,Cash
+ORD0106,2026-03-04,Kolkata,Burger,Main Course,3.0,149,20,Cash
+ORD0107,2026-03-01,Dankuni,Pasta,Main Course,4.0,229,0,Card
+ORD0108,2026-03-17,Kolkata,Cold Coffee,Beverages,1.0,99,20,UPI
+ORD0109,2026-03-01,Dankuni,Brownie,Dessert,4.0,129,0,UPI
+ORD0110,2026-01-28,Salt Lake,Pasta,Main Course,4.0,229,0,Cash
+ORD0111,2026-02-23,Howrah,Pasta,Main Course,4.0,229,0,UPI
+ORD0112,2026-01-07,Howrah,Garlic Bread,Sides,1.0,119,50,UPI
+ORD0113,2026-01-04,Dankuni,Brownie,Dessert,1.0,129,0,UPI
+ORD0114,2026-01-31,Dankuni,Pizza,Main Course,5.0,299,0,Cash
+ORD0115,2026-01-28,Salt Lake,Brownie,Dessert,1.0,129,50,Card
+ORD0116,2026-03-19,Kolkata,Pasta,Main Course,3.0,229,0,UPI
+ORD0117,2026-01-04,Howrah,Pasta,Main Course,1.0,229,50,Card
+ORD0118,2026-01-26,Kolkata,Brownie,Dessert,4.0,129,20,Card
+ORD0119,2026-03-31,Howrah,Brownie,Dessert,2.0,129,0,Card
+ORD0120,2026-01-06,Howrah,Cold Coffee,Beverages,1.0,99,50,Card
+ORD0001,2026-02-05,Dankuni,Brownie,Dessert,1.0,129,0,UPI
