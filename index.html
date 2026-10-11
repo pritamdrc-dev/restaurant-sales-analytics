@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Restaurant Sales Analytics</title>
+<style>
+:root{--bg:#0b1020;--panel:#131b2f;--panel2:#19243b;--text:#edf3ff;--muted:#98a8c5;--line:#293650;--accent:#79e0c3;--blue:#82aaff;--orange:#ffc078;--red:#ff8b9a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top right,#182b43 0,#0b1020 45%);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:24px 18px 16px;max-width:1200px;margin:auto}h1{font-size:clamp(24px,5vw,36px);margin:0 0 7px;letter-spacing:-.6px}p{color:var(--muted);margin:0;line-height:1.5}.tag{display:inline-block;border:1px solid #35556a;color:var(--accent);padding:5px 9px;border-radius:99px;font-size:12px;margin-bottom:12px}
+main{max-width:1200px;margin:auto;padding:0 14px 30px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);padding:12px;border-radius:16px;margin:10px 0 16px}.toolbar label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}.field{flex:1;min-width:130px}select,input,button{font:inherit;color:var(--text);background:#0c1426;border:1px solid var(--line);border-radius:10px;padding:10px;width:100%;min-height:42px}button{cursor:pointer;background:#183a3b;border-color:#28615b;color:#c8fff0;font-weight:650}button.secondary{background:#1a2740;border-color:var(--line);color:var(--text)}button:active{transform:scale(.99)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}.card{background:linear-gradient(145deg,var(--panel),#10182a);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}.kpi-label{font-size:12px;color:var(--muted)}.kpi{font-size:clamp(20px,4vw,30px);font-weight:750;margin-top:8px;overflow-wrap:anywhere}.kpi-note{font-size:12px;color:var(--accent);margin-top:5px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card h2{font-size:16px;margin:0 0 5px}.sub{font-size:12px;color:var(--muted);margin-bottom:14px}.chart{height:235px;display:flex;align-items:flex-end;gap:9px;padding:12px 2px 25px;border-bottom:1px solid var(--line);overflow-x:auto}.bar-col{flex:1;min-width:28px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}.bar{width:min(42px,75%);min-height:3px;background:linear-gradient(180deg,var(--accent),#378e94);border-radius:7px 7px 2px 2px;position:relative}.bar.blue{background:linear-gradient(180deg,var(--blue),#4a68bd)}.bar.orange{background:linear-gradient(180deg,var(--orange),#c97a46)}.bar-value{font-size:10px;color:var(--muted);white-space:nowrap}.bar-label{font-size:10px;color:var(--muted);text-align:center;max-width:70px;overflow-wrap:anywhere}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px 7px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600}td:last-child,th:last-child{text-align:right}.table-wrap{overflow-x:auto}.question{display:flex;gap:8px;margin-top:12px}.question input{flex:1;min-width:0}.answer{margin-top:12px;padding:12px;border:1px solid #315b57;border-radius:12px;background:#0d2829;line-height:1.55;white-space:pre-wrap}.note{font-size:12px;color:var(--muted);margin-top:10px}.footer{color:var(--muted);font-size:12px;text-align:center;padding:22px}
+@media(max-width:720px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}.card{padding:13px}.chart{height:220px}.toolbar .field{min-width:calc(50% - 10px)}}
+@media(max-width:390px){.toolbar .field{min-width:100%}.question{flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+<div class="tag">RESTAURANT OPERATIONS • ANALYTICS</div>
+<h1>Restaurant Sales Dashboard</h1>
+<p>Explore revenue, branches, products and monthly performance on your phone.</p>
+</header>
+<main>
+<section class="toolbar">
+<div class="field"><label for="branchFilter">BRANCH</label><select id="branchFilter"><option value="All">All branches</option></select></div>
+<div class="field"><label for="productFilter">PRODUCT</label><select id="productFilter"><option value="All">All products</option></select></div>
+<div class="field"><label for="monthFilter">MONTH</label><select id="monthFilter"><option value="All">All months</option></select></div>
+<div class="field"><label for="csvFile">LOAD YOUR CSV</label><input type="file" id="csvFile" accept=".csv,text/csv" /></div>
+<button class="secondary" id="resetBtn" style="align-self:end;max-width:150px">Reset filters</button>
+</section>
+
+<section class="kpis">
+<div class="card"><div class="kpi-label">NET SALES</div><div class="kpi" id="netSales">₹0</div><div class="kpi-note">Filtered revenue</div></div>
+<div class="card"><div class="kpi-label">ORDERS</div><div class="kpi" id="orders">0</div><div class="kpi-note">Distinct order IDs</div></div>
+<div class="card"><div class="kpi-label">AVG. ORDER VALUE</div><div class="kpi" id="aov">₹0</div><div class="kpi-note">Net sales ÷ orders</div></div>
+<div class="card"><div class="kpi-label">TOP BRANCH</div><div class="kpi" id="topBranch">—</div><div class="kpi-note" id="topBranchNote">By net sales</div></div>
+</section>
+
+<section class="grid">
+<div class="card"><h2>Revenue by branch</h2><div class="sub">Net sales for each branch</div><div class="chart" id="branchChart"></div></div>
+<div class="card"><h2>Revenue by product</h2><div class="sub">Net sales by menu item</div><div class="chart" id="productChart"></div></div>
+<div class="card"><h2>Monthly revenue</h2><div class="sub">Trend by month</div><div class="chart" id="monthChart"></div></div>
+<div class="card"><h2>Payment methods</h2><div class="sub">Revenue grouped by payment method</div><div class="table-wrap"><table><thead><tr><th>Method</th><th>Orders</th><th>Revenue</th></tr></thead><tbody id="paymentTable"></tbody></table></div></div>
+<div class="card"><h2>Branch performance</h2><div class="sub">Ranked by revenue</div><div class="table-wrap"><table><thead><tr><th>Branch</th><th>Orders</th><th>Net sales</th></tr></thead><tbody id="branchTable"></tbody></table></div></div>
+<div class="card"><h2>Ask your data (basic)</h2><div class="sub">Works offline for common questions; this is rule-based, not a connected LLM.</div>
+<div class="question"><input id="questionInput" placeholder="e.g. Which product sells most?" /><button id="askBtn" style="max-width:90px">Ask</button></div>
+<div id="answer" class="answer" aria-live="polite">Try: total sales, best branch, top product, most units sold, monthly sales, payment analysis, business summary.</div>
+<div class="note">To use your real data, select <b>restaurant_sales_clean.csv</b>. Data stays in this browser session and is not uploaded.</div>
+</div>
+</section>
+<div class="footer">Restaurant Sales Analytics • Offline-friendly demo • Replace sample data with your CSV</div>
+</main>
+<script>
+const sample = [
+{Order_ID:"ORD0001",Order_Date:"2026-01-05",Branch:"Dankuni",Product:"Pizza",Category:"Main",Quantity:3,Unit_Price:299,Discount:0,Payment_Method:"UPI",Gross_Sales:897,Net_Sales:897},
+{Order_ID:"ORD0002",Order_Date:"2026-01-12",Branch:"Howrah",Product:"Pasta",Category:"Main",Quantity:2,Unit_Price:229,Discount:20,Payment_Method:"Cash",Gross_Sales:458,Net_Sales:438},
+{Order_ID:"ORD0003",Order_Date:"2026-01-19",Branch:"Salt Lake",Product:"Brownie",Category:"Dessert",Quantity:4,Unit_Price:99,Discount:0,Payment_Method:"Card",Gross_Sales:396,Net_Sales:396},
+{Order_ID:"ORD0004",Order_Date:"2026-02-03",Branch:"Dankuni",Product:"Pizza",Category:"Main",Quantity:2,Unit_Price:299,Discount:10,Payment_Method:"UPI",Gross_Sales:598,Net_Sales:588},
+{Order_ID:"ORD0005",Order_Date:"2026-02-15",Branch:"Kolkata",Product:"Garlic Bread",Category:"Sides",Quantity:3,Unit_Price:129,Discount:0,Payment_Method:"Cash",Gross_Sales:387,Net_Sales:387},
+{Order_ID:"ORD0006",Order_Date:"2026-02-21",Branch:"Howrah",Product:"Burger",Category:"Main",Quantity:2,Unit_Price:199,Discount:15,Payment_Method:"Card",Gross_Sales:398,Net_Sales:383},
+{Order_ID:"ORD0007",Order_Date:"2026-03-04",Branch:"Dankuni",Product:"Pasta",Category:"Main",Quantity:3,Unit_Price:229,Discount:0,Payment_Method:"UPI",Gross_Sales:687,Net_Sales:687},
+{Order_ID:"ORD0008",Order_Date:"2026-03-11",Branch:"Salt Lake",Product:"Cold Coffee",Category:"Beverage",Quantity:4,Unit_Price:119,Discount:20,Payment_Method:"UPI",Gross_Sales:476,Net_Sales:456},
+{Order_ID:"ORD0009",Order_Date:"2026-03-18",Branch:"Kolkata",Product:"Pizza",Category:"Main",Quantity:1,Unit_Price:299,Discount:0,Payment_Method:"Card",Gross_Sales:299,Net_Sales:299},
+{Order_ID:"ORD0010",Order_Date:"2026-03-26",Branch:"Dankuni",Product:"Brownie",Category:"Dessert",Quantity:5,Unit_Price:99,Discount:0,Payment_Method:"Cash",Gross_Sales:495,Net_Sales:495},
+{Order_ID:"ORD0011",Order_Date:"2026-01-28",Branch:"Howrah",Product:"Garlic Bread",Category:"Sides",Quantity:2,Unit_Price:129,Discount:0,Payment_Method:"UPI",Gross_Sales:258,Net_Sales:258},
+{Order_ID:"ORD0012",Order_Date:"2026-02-25",Branch:"Salt Lake",Product:"Burger",Category:"Main",Quantity:3,Unit_Price:199,Discount:0,Payment_Method:"Cash",Gross_Sales:597,Net_Sales:597}
+];
+let rows = sample.slice();
+const $ = id => document.getElementById(id);
+const money = n => "₹" + Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2});
+const num = n => Number(String(n??0).replace(/[,₹\s]/g,"")) || 0;
+function val(r,...keys){for(const k of keys){if(r[k]!==undefined && r[k]!==null && r[k]!=="")return r[k]}return ""}
+function normalized(r){
+ return {
+  Order_ID:String(val(r,"Order_ID","order_id","Order ID","orderid")||("ROW"+Math.random())),
+  Order_Date:String(val(r,"Order_Date","order_date","Order Date","Date","date")).slice(0,10),
+  Branch:String(val(r,"Branch","branch")||"Unknown"),
+  Product:String(val(r,"Product","product")||"Unknown"),
+  Quantity:num(val(r,"Quantity","quantity","Units_Sold","units_sold")),
+  Payment_Method:String(val(r,"Payment_Method","payment_method","Payment Method")||"Unknown"),
+  Net_Sales:num(val(r,"Net_Sales","net_sales","Net Sales","Revenue","revenue")),
+  Gross_Sales:num(val(r,"Gross_Sales","gross_sales","Gross Sales")),
+ };
+}
+function csvParse(text){
+ const lines=[];let row=[],cell="",quoted=false;
+ for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];
+  if(c==='"'&&quoted&&n==='"'){cell+='"';i++}
+  else if(c==='"')quoted=!quoted;
+  else if(c===','&&!quoted){row.push(cell);cell=""}
+  else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&n==='\n')i++;row.push(cell);if(row.some(x=>x.trim()!==""))lines.push(row);row=[];cell=""}
+  else cell+=c;
+ }
+ if(cell.length||row.length){row.push(cell);lines.push(row)}
+ if(lines.length<2)throw Error("CSV needs a header row and at least one data row.");
+ const headers=lines.shift().map(x=>x.trim().replace(/^\uFEFF/,""));
+ return lines.map(line=>Object.fromEntries(headers.map((h,i)=>[h,(line[i]||"").trim()])));
+}
+function options(id,values,allLabel){const el=$(id),old=el.value;el.innerHTML="";const o=document.createElement("option");o.value="All";o.textContent=allLabel;el.appendChild(o);[...new Set(values)].sort().forEach(v=>{const x=document.createElement("option");x.value=v;x.textContent=v;el.appendChild(x)});if([...el.options].some(o=>o.value===old))el.value=old}
+function filters(){
+ const b=$("branchFilter").value,p=$("productFilter").value,m=$("monthFilter").value;
+ return rows.map(normalized).filter(r=>(b==="All"||r.Branch===b)&&(p==="All"||r.Product===p)&&(m==="All"||r.Order_Date.slice(0,7)===m));
+}
+function group(data,key,metric){const out={};data.forEach(r=>{const k=key(r)||"Unknown";out[k]=(out[k]||0)+(metric(r)||0)});return Object.entries(out).sort((a,b)=>b[1]-a[1])}
+function distinctOrders(data){return new Set(data.map(r=>r.Order_ID)).size}
+function drawChart(id,entries,kind="green"){
+ const el=$(id);el.innerHTML="";
+ if(!entries.length){el.textContent="No data";return}
+ const max=Math.max(...entries.map(x=>x[1]),1);
+ entries.slice(0,12).forEach(([label,value])=>{const col=document.createElement("div");col.className="bar-col";const v=document.createElement("div");v.className="bar-value";v.textContent=shortMoney(value);const bar=document.createElement("div");bar.className="bar "+(kind==="blue"?"blue":kind==="orange"?"orange":"");bar.style.height=Math.max(3,value/max*78)+"%";bar.title=label+": "+money(value);const l=document.createElement("div");l.className="bar-label";l.textContent=label;col.append(v,bar,l);el.appendChild(col)})
+}
+function shortMoney(n){if(Math.abs(n)>=100000)return "₹"+(n/100000).toFixed(1)+"L";if(Math.abs(n)>=1000)return "₹"+(n/1000).toFixed(1)+"k";return "₹"+Math.round(n)}
+function fillTable(id,html){$(id).innerHTML=html||'<tr><td colspan="3">No data</td></tr>'}
+function render(){
+ const d=filters(),sales=d.reduce((s,r)=>s+r.Net_Sales,0),orders=distinctOrders(d),branches=group(d,r=>r.Branch,r=>r.Net_Sales),products=group(d,r=>r.Product,r=>r.Net_Sales),months=group(d,r=>r.Order_Date.slice(0,7),r=>r.Net_Sales).sort((a,b)=>a[0].localeCompare(b[0]));
+ $("netSales").textContent=money(sales);$("orders").textContent=orders.toLocaleString("en-IN");$("aov").textContent=money(orders?sales/orders:0);$("topBranch").textContent=branches[0]?.[0]||"—";$("topBranchNote").textContent=branches[0]?money(branches[0][1])+" revenue":"By net sales";
+ drawChart("branchChart",branches,"green");drawChart("productChart",products,"blue");drawChart("monthChart",months,"orange");
+ const brOrders={};d.forEach(r=>{brOrders[r.Branch]??=new Set();brOrders[r.Branch].add(r.Order_ID)});
+ fillTable("branchTable",branches.map(([b,v])=>`<tr><td>${escapeHtml(b)}</td><td>${brOrders[b].size}</td><td>${money(v)}</td></tr>`).join(""));
+ const pay={};d.forEach(r=>{const k=r.Payment_Method;pay[k]??={orders:new Set(),sales:0};pay[k].orders.add(r.Order_ID);pay[k].sales+=r.Net_Sales});
+ fillTable("paymentTable",Object.entries(pay).sort((a,b)=>b[1].sales-a[1].sales).map(([k,v])=>`<tr><td>${escapeHtml(k)}</td><td>${v.orders.size}</td><td>${money(v.sales)}</td></tr>`).join(""));
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function refreshOptions(){const d=rows.map(normalized);options("branchFilter",d.map(r=>r.Branch),"All branches");options("productFilter",d.map(r=>r.Product),"All products");options("monthFilter",d.map(r=>r.Order_Date.slice(0,7)).filter(Boolean),"All months")}
+function ask(){
+ const q=$("questionInput").value.toLowerCase().trim(),d=filters(),sales=d.reduce((s,r)=>s+r.Net_Sales,0),orders=distinctOrders(d);
+ const prodRev=group(d,r=>r.Product,r=>r.Net_Sales),prodUnits=group(d,r=>r.Product,r=>r.Quantity),branchRev=group(d,r=>r.Branch,r=>r.Net_Sales),months=group(d,r=>r.Order_Date.slice(0,7),r=>r.Net_Sales).sort((a,b)=>a[0].localeCompare(b[0]));
+ let answer="I couldn't match that question. Try: total sales, best branch, top product, most units sold, monthly sales, payment analysis, business summary.";
+ if(/help|example|what can|questions/.test(q))answer="Try: total sales | best branch | top product | most units sold | monthly sales | compare branches | payment analysis | business summary";
+ else if(/summary|overview|business/.test(q))answer=`BUSINESS SUMMARY\nNet sales: ${money(sales)}\nDistinct orders: ${orders}\nAverage order value: ${money(orders?sales/orders:0)}\nBest branch: ${branchRev[0]?.[0]||"—"} (${money(branchRev[0]?.[1]||0)})\nTop product by revenue: ${prodRev[0]?.[0]||"—"} (${money(prodRev[0]?.[1]||0)})`;
+ else if(/total|net sales|revenue/.test(q)&&!/monthly|month|branch|product|payment/.test(q))answer=`Filtered net sales: ${money(sales)} across ${orders} distinct orders.`;
+ else if(/best branch|highest branch|top branch|compare branch|branch performance|branches/.test(q))answer="BRANCH REVENUE\n"+branchRev.map(([k,v])=>`${k}: ${money(v)}`).join("\n");
+ else if(/top product|product.*(revenue|sales)|best selling product/.test(q))answer="PRODUCT REVENUE\n"+prodRev.map(([k,v])=>`${k}: ${money(v)}`).join("\n");
+ else if(/most units|units sold|quantity|sell.*most units/.test(q))answer="UNITS SOLD\n"+prodUnits.map(([k,v])=>`${k}: ${v}`).join("\n");
+ else if(/monthly|month|trend/.test(q))answer="MONTHLY REVENUE\n"+months.map(([k,v])=>`${k}: ${money(v)}`).join("\n");
+ else if(/payment|upi|cash|card/.test(q)){const p=group(d,r=>r.Payment_Method,r=>r.Net_Sales);answer="PAYMENT REVENUE\n"+p.map(([k,v])=>`${k}: ${money(v)}`).join("\n")}
+ $("answer").textContent=answer;
+}
+["branchFilter","productFilter","monthFilter"].forEach(id=>$(id).addEventListener("change",render));
+$("resetBtn").addEventListener("click",()=>{["branchFilter","productFilter","monthFilter"].forEach(id=>$(id).value="All");render()});
+$("askBtn").addEventListener("click",ask);$("questionInput").addEventListener("keydown",e=>{if(e.key==="Enter")ask()});
+$("csvFile").addEventListener("change",async e=>{const file=e.target.files[0];if(!file)return;try{const parsed=csvParse(await file.text());if(!parsed.length)throw Error("No rows found.");rows=parsed;refreshOptions();render();$("answer").textContent=`Loaded ${rows.length} rows from ${file.name}. Ask a question or explore the charts.`}catch(err){$("answer").textContent="Could not load CSV: "+err.message}});
+refreshOptions();render();
+</script>
+</body>
+  </html>
