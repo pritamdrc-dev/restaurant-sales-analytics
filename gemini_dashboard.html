@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Restaurant Gemini AI Analyst</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:#0e1729;color:#eef4ff;font-family:Arial,sans-serif}
+header{padding:25px 18px;background:#172944;border-bottom:1px solid #30415e}
+h1{font-size:25px;margin:0 0 8px}
+p{color:#aebdd4;line-height:1.5}
+main{max-width:850px;margin:22px auto;padding:0 14px}
+.card{background:#121e33;border:1px solid #30415e;border-radius:17px;padding:18px;margin-bottom:16px}
+label{display:block;font-size:14px;color:#aebdd4;margin:12px 0 8px}
+input,textarea,button{font:inherit;border-radius:10px}
+input[type=file],textarea,input[type=text]{width:100%;padding:13px;background:#0b1425;color:#eef4ff;border:1px solid #354763}
+textarea{min-height:110px;resize:vertical}
+button{border:0;padding:13px 17px;background:#4c83f5;color:white;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+button.secondary{background:#263852;margin-top:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.status{font-size:14px;color:#8be2c6;overflow-wrap:anywhere}
+#answer{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65}
+small{color:#aebdd4}
+</style>
+</head>
+<body>
+<header>
+  <h1>Restaurant Gemini AI Analyst</h1>
+  <p>Ask questions about your restaurant sales data.</p>
+  <div id="status" class="status">Ready. Upload your sales CSV to begin.</div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>1. Load sales data</h2>
+    <p>Choose <b>restaurant_sales_clean.csv</b> from your phone.</p>
+    <label for="csvFile">Sales CSV file</label>
+    <input id="csvFile" type="file" accept=".csv,text/csv">
+    <div class="row">
+      <button id="loadBtn" type="button">Load and summarise CSV</button>
+    </div>
+    <div id="dataSummary"><small>No CSV loaded yet.</small></div>
+  </section>
+
+  <section class="card">
+    <h2>2. Ask Gemini</h2>
+    <label for="question">Your question</label>
+    <textarea id="question" maxlength="2000"
+      placeholder="Example: Give me three practical recommendations to increase restaurant sales."></textarea>
+    <div class="row">
+      <button id="askBtn" type="button">Ask Gemini</button>
+      <button id="sampleBtn" type="button" class="secondary">Example question</button>
+    </div>
+    <p><small>Your question and aggregated sales summary are sent to your Cloudflare Worker, which calls Gemini. Raw CSV rows are not sent.</small></p>
+  </section>
+
+  <section class="card">
+    <h2>Gemini's answer</h2>
+    <div id="answer">Your answer will appear here.</div>
+  </section>
+</main>
+
+<script>
+"use strict";
+
+// Cloudflare Worker URL; the API key remains in the Worker Secret.
+const API_URL =
+  "https://restaurant-analytics-api.deyroypritam46.workers.dev/ask";
+
+let businessContext = "";
+let csvLoaded = false;
+
+const $ = id => document.getElementById(id);
+const status = message => { $("status").textContent = message; };
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = "", quoted = false;
+
+  text = text.replace(/^\uFEFF/, "");
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+
+    if (quoted) {
+      if (c === '"' && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else if (c === '"') {
+        quoted = false;
+      } else {
+        field += c;
+      }
+    } else if (c === '"' && field === "") {
+      quoted = true;
+    } else if (c === ",") {
+      row.push(field.trim());
+      field = "";
+    } else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field.trim());
+      if (row.some(v => v !== "")) rows.push(row);
+      row = [];
+      field = "";
+    } else {
+      field += c;
+    }
+  }
+
+  row.push(field.trim());
+  if (row.some(v => v !== "")) rows.push(row);
+  if (quoted) throw new Error("CSV has an unclosed quoted field.");
+  if (rows.length < 2) throw new Error("CSV contains no data rows.");
+
+  const headers = rows[0].map(h => h.trim());
+  return rows.slice(1).map(values => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = values[i] ?? "");
+    return obj;
+  });
+}
+
+function numberOf(value) {
+  const n = Number(String(value ?? "").replace(/[₹,\s]/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
+function money(value) {
+  return "₹" + value.toLocaleString("en-IN", {
+    maximumFractionDigits: 2
+  });
+}
+
+function topTotals(rows, key, valueKey) {
+  const totals = {};
+  for (const r of rows) {
+    const name = String(r[key] || "Unknown");
+    totals[name] = (totals[name] || 0) + numberOf(r[valueKey]);
+  }
+  return Object.entries(totals)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0,5)
+    .map(([name,total]) => `${name}: ${money(total)}`);
+}
+
+function topUnits(rows, key) {
+  const totals = {};
+  for (const r of rows) {
+    const name = String(r[key] || "Unknown");
+    totals[name] = (totals[name] || 0) + numberOf(r.Quantity);
+  }
+  return Object.entries(totals)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0,5)
+    .map(([name,total]) => `${name}: ${total} units`);
+}
+
+function makeSummary(rows) {
+  const required = [
+    "Order_ID", "Branch", "Product", "Quantity",
+    "Net_Sales", "Payment_Method"
+  ];
+  const missing = required.filter(k => !(k in rows[0]));
+  if (missing.length) {
+    throw new Error("Missing CSV columns: " + missing.join(", "));
+  }
+
+  const netSales = rows.reduce((s,r) => s + numberOf(r.Net_Sales), 0);
+  const orders = new Set(rows.map(r => r.Order_ID).filter(Boolean)).size;
+  const avg = orders ? netSales / orders : 0;
+
+  let monthly = [];
+  if ("Order_Date" in rows[0]) {
+    const months = {};
+    for (const r of rows) {
+      const raw = r.Order_Date || "";
+      const date = new Date(raw);
+      const month = Number.isNaN(date.getTime())
+        ? raw.slice(0,7)
+        : date.toLocaleDateString("en-CA", {
+            year:"numeric", month:"2-digit", timeZone:"UTC"
+          });
+      if (month) months[month] = (months[month] || 0) + numberOf(r.Net_Sales);
+    }
+    monthly = Object.entries(months)
+      .sort((a,b) => a[0].localeCompare(b[0]))
+      .map(([month,total]) => `${month}: ${money(total)}`);
+  }
+
+  const context = [
+    `CSV rows: ${rows.length}`,
+    `Distinct orders: ${orders}`,
+    `Total net sales: ${money(netSales)}`,
+    `Average net sales per distinct order: ${money(avg)}`,
+    "Top branches by net sales:\n" + topTotals(rows,"Branch","Net_Sales").join("\n"),
+    "Top products by net sales:\n" + topTotals(rows,"Product","Net_Sales").join("\n"),
+    "Top products by quantity:\n" + topUnits(rows,"Product").join("\n"),
+    "Payment methods by net sales:\n" + topTotals(rows,"Payment_Method","Net_Sales").join("\n"),
+    "Monthly net sales:\n" + (monthly.join("\n") || "Date data unavailable.")
+  ].join("\n\n");
+
+  return {context, netSales, orders, avg, rowCount:rows.length};
+}
+
+$("loadBtn").addEventListener("click", async () => {
+  const file = $("csvFile").files[0];
+  if (!file) {
+    status("Please choose a CSV file first.");
+    return;
+  }
+
+  try {
+    status("Reading CSV...");
+    const rows = parseCSV(await file.text());
+    const summary = makeSummary(rows);
+
+    businessContext = summary.context;
+    csvLoaded = true;
+
+    $("dataSummary").textContent =
+      `Loaded ${summary.rowCount} rows | Orders: ${summary.orders} | Net sales: ${money(summary.netSales)} | Average order value: ${money(summary.avg)}`;
+
+    status("CSV loaded. You can now ask Gemini.");
+  } catch (err) {
+    businessContext = "";
+    csvLoaded = false;
+    status("CSV error: " + err.message);
+    $("dataSummary").textContent = "Could not summarise this CSV.";
+  }
+});
+
+$("sampleBtn").addEventListener("click", () => {
+  $("question").value =
+    "Summarise business performance and give three practical recommendations to increase sales.";
+});
+
+$("askBtn").addEventListener("click", async () => {
+  const question = $("question").value.trim();
+
+  if (!question) {
+    status("Enter a question first.");
+    return;
+  }
+  if (!csvLoaded) {
+    status("Please load your sales CSV first.");
+    return;
+  }
+
+  const button = $("askBtn");
+  button.disabled = true;
+  $("answer").textContent = "Contacting Gemini...";
+  status("Sending question to your secure Worker...");
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        question,
+        context: businessContext
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || `Request failed (${response.status})`);
+    }
+    if (!result.answer) throw new Error("No answer was returned.");
+
+    $("answer").textContent = result.answer;
+    status("Gemini answered successfully.");
+  } catch (err) {
+    $("answer").textContent = "Could not get an answer: " + err.message;
+    status("Request failed. Check the Worker URL, deployment and Gemini API status.");
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+  </html>
+  
